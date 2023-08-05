@@ -1,0 +1,9 @@
+DigiCertGlobalRootCA.crt.pem
+appsettings.json
+bin/*
+wwwroot/*
+obj/*
+.vs/*
+*.map
+*.log
+*.bin
