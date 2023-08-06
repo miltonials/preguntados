@@ -114,6 +114,8 @@ namespace preguntados.Models
 
                 entity.ToView("vpreguntasaleatorias");
 
+                entity.Property(e => e.Id).HasMaxLength(200);
+
                 entity.Property(e => e.OpcionA).HasMaxLength(200);
 
                 entity.Property(e => e.OpcionB).HasMaxLength(200);
@@ -122,9 +124,9 @@ namespace preguntados.Models
 
                 entity.Property(e => e.Pregunta).HasMaxLength(500);
 
-                entity.Property(e => e.RespuestaCorrecta)
-                    .HasMaxLength(1)
-                    .IsFixedLength();
+                //entity.Property(e => e.RespuestaCorrecta)
+                //    .HasMaxLength(1)
+                //    .IsFixedLength();
             });
 
             OnModelCreatingPartial(modelBuilder);

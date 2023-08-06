@@ -4,47 +4,55 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h2>@ViewData["Title"]</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Pregunta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OpcionA)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OpcionB)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OpcionC)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Pregunta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OpcionA)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.OpcionB)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.OpcionC)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RespuestaCorrecta)
-            </td>
-        </tr>
+<button id="startButton" class="btn btn-primary">Iniciar partida</button>
+<div id="questionContainer">
+</div>
+
+@section Scripts {
+    <script>
+        let correctAnswersCount = 0;
+        let correctAnswer = "";
+
+        document.getElementById("startButton").addEventListener("click", function () {
+            document.getElementById("startButton").style.display = "none";
+            showQuestion(0);
+        });
+
+        function showQuestion(index) {
+            let questions = @Html.Raw(Json.Serialize(Model));
+            let question = questions[index];
+
+            if (!question) {
+                document.getElementById("questionContainer").innerHTML = `
+                            <h3>Fin del juego</h3>
+                            <p>Respuestas correctas: ${correctAnswersCount}</p>
+                        `;
+            } else {
+                correctAnswer = question.respuestaCorrecta;
+                document.getElementById("questionContainer").innerHTML = `
+                            <h3>Pregunta:</h3>
+                            <p>${question.pregunta}</p>
+                            <form id="answerForm">
+                                <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
+                                <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
+                                <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
+                                <input type="submit" value="Responder" class="btn btn-primary" />
+                            </form>
+                        `;
+
+                document.getElementById("answerForm").addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+
+                    if (correctAnswer === selectedAnswer) {
+                        correctAnswersCount++;
+                    }
+
+                    showQuestion(index + 1);
+                });
+            }
+        }
+    </script>
 }
-    </tbody>
-</table>

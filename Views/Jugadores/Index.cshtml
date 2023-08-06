@@ -5,35 +5,68 @@
 }
 
 
-<h1>Bienvenido @ViewBag.player</h1>
-<div class="row">
-    <iframe src="~/../Vpreguntasaleatorias" width="100%" height="50%"></iframe>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <h2>Columna 1</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Nombre)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Nombre)
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-6">
-        <h2>Columna 2</h2>
-        <iframe src="~/../Vhistorialresultados" width="100%" height="500px"></iframe>
+<div class="container">
+    <div class="row">
+        <h1>Bienvenido @ViewBag.player</h1>
+        <div class="col-md-6">
+            <div class="align-content-center">
+
+        
+            <button id="startButton" class="btn btn-primary">Iniciar partida</button>
+            <div id="questionContainer">
+            </div>
+
+            @section Scripts {
+                <script>
+                    let correctAnswersCount = 0;
+                    let correctAnswer = "";
+
+                    document.getElementById("startButton").addEventListener("click", function () {
+                        document.getElementById("startButton").style.display = "none";
+                        showQuestion(0);
+                    });
+
+                    function showQuestion(index) {
+                        let questions = @Html.Raw(Json.Serialize(ViewBag.preguntas));
+                        let question = questions[index];
+
+                        if (!question) {
+
+                            document.getElementById("questionContainer").innerHTML = `
+                                                            <h3>Fin del juego</h3>
+                                                            <p>Respuestas correctas: ${correctAnswersCount}</p>
+                                                        `;
+                        } else {
+                            correctAnswer = question.respuestaCorrecta;
+                            document.getElementById("questionContainer").innerHTML = `
+                                                            <h3>Pregunta:</h3>
+                                                            <p>${question.pregunta}</p>
+                                                            <form id="answerForm">
+                                                                <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
+                                                                <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
+                                                                <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
+                                                                <input type="submit" value="Responder" class="btn btn-primary" />
+                                                            </form>
+                                                        `;
+
+                            document.getElementById("answerForm").addEventListener("submit", function (event) {
+                                event.preventDefault();
+                                let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+
+                                if (correctAnswer === selectedAnswer) {
+                                    correctAnswersCount++;
+                                }
+
+                                showQuestion(index + 1);
+                            });
+                        }
+                    }
+                </script>
+            }
+                </div>
+        </div>
+        <div class="col-md-6">
+            <iframe src="~/../Vhistorialresultados" width="100%" height="500px"></iframe>
+        </div>
     </div>
 </div>

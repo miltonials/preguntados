@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,6 @@ namespace preguntados.Controllers
 {
     public class JugadoresController : Controller
     {
-        private readonly Jugadore jugador;
         private readonly preguntadosContext _context;
 
         public JugadoresController(preguntadosContext context)
@@ -24,6 +24,9 @@ namespace preguntados.Controllers
         {
             ViewData["player"] = jugador.Nombre;
             ViewBag.player = jugador.Nombre;
+
+            ViewBag.preguntas = _context.Vpreguntasaleatorias.ToList();
+
             return _context.Jugadores != null ? 
                           View(await _context.Jugadores.ToListAsync()) :
                           Problem("Entity set 'preguntadosContext.Jugadores'  is null.");
