@@ -1,0 +1,50 @@
+﻿@model IEnumerable<preguntados.Models.Vpreguntasaleatoria>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Pregunta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OpcionA)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OpcionB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OpcionC)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pregunta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OpcionA)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.OpcionB)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.OpcionC)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RespuestaCorrecta)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

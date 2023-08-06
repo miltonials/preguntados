@@ -11,6 +11,7 @@ namespace preguntados.Controllers
 {
     public class JugadoresController : Controller
     {
+        private readonly Jugadore jugador;
         private readonly preguntadosContext _context;
 
         public JugadoresController(preguntadosContext context)
@@ -19,35 +20,13 @@ namespace preguntados.Controllers
         }
 
         // GET: Jugadores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Jugadore jugador)
         {
-              return _context.Jugadores != null ? 
+            ViewData["player"] = jugador.Nombre;
+            ViewBag.player = jugador.Nombre;
+            return _context.Jugadores != null ? 
                           View(await _context.Jugadores.ToListAsync()) :
                           Problem("Entity set 'preguntadosContext.Jugadores'  is null.");
-        }
-
-        // GET: Jugadores/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Jugadores == null)
-            {
-                return NotFound();
-            }
-
-            var jugadore = await _context.Jugadores
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jugadore == null)
-            {
-                return NotFound();
-            }
-
-            return View(jugadore);
-        }
-
-        // GET: Jugadores/Create
-        public IActionResult Create()
-        {
-            return View();
         }
 
         // POST: Jugadores/Create
@@ -59,98 +38,15 @@ namespace preguntados.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(jugadore);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(jugadore);
-        }
+                // ejecutar y guardar en una variable el resultado del procedimiento almacenado "CALL RegistrarJugador({jugadore.Nombre})"
+                var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugadore.Nombre})");
 
-        // GET: Jugadores/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Jugadores == null)
-            {
-                return NotFound();
-            }
+                //mostrar el mensaje en la vista
+                ViewData["player"] = jugadore.Nombre;
+                ViewBag.player = jugadore.Nombre;
 
-            var jugadore = await _context.Jugadores.FindAsync(id);
-            if (jugadore == null)
-            {
-                return NotFound();
+                return RedirectToAction(nameof(Index),"Jugadores", jugadore);
             }
-            return View(jugadore);
-        }
-
-        // POST: Jugadores/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre")] Jugadore jugadore)
-        {
-            if (id != jugadore.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(jugadore);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JugadoreExists(jugadore.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(jugadore);
-        }
-
-        // GET: Jugadores/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Jugadores == null)
-            {
-                return NotFound();
-            }
-
-            var jugadore = await _context.Jugadores
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jugadore == null)
-            {
-                return NotFound();
-            }
-
-            return View(jugadore);
-        }
-
-        // POST: Jugadores/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Jugadores == null)
-            {
-                return Problem("Entity set 'preguntadosContext.Jugadores'  is null.");
-            }
-            var jugadore = await _context.Jugadores.FindAsync(id);
-            if (jugadore != null)
-            {
-                _context.Jugadores.Remove(jugadore);
-            }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
