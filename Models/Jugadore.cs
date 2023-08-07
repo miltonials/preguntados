@@ -7,12 +7,12 @@ namespace preguntados.Models
     {
         public Jugadore()
         {
-            Resultados = new HashSet<Resultado>();
+            Resultados = new HashSet<Historial>();
         }
 
         public int Id { get; set; }
         public string Nombre { get; set; } = null!;
 
-        public virtual ICollection<Resultado> Resultados { get; set; }
+        public virtual ICollection<Historial> Resultados { get; set; }
     }
 }

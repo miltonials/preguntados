@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using preguntados.Models;
 
@@ -26,10 +20,8 @@ namespace preguntados.Controllers
             ViewBag.player = jugador.Nombre;
 
             ViewBag.preguntas = _context.Vpreguntasaleatorias.ToList();
-
-            return _context.Jugadores != null ? 
-                          View(await _context.Jugadores.ToListAsync()) :
-                          Problem("Entity set 'preguntadosContext.Jugadores'  is null.");
+            var preguntadosContext = _context.Historial;
+            return View(await preguntadosContext.ToListAsync());
         }
 
         // POST: Jugadores/Create
@@ -41,21 +33,13 @@ namespace preguntados.Controllers
         {
             if (ModelState.IsValid)
             {
-                // ejecutar y guardar en una variable el resultado del procedimiento almacenado "CALL RegistrarJugador({jugadore.Nombre})"
                 var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugadore.Nombre})");
 
-                //mostrar el mensaje en la vista
-                ViewData["player"] = jugadore.Nombre;
-                ViewBag.player = jugadore.Nombre;
+                ViewBag.player = jugadore.Nombre.ToUpper();
 
                 return RedirectToAction(nameof(Index),"Jugadores", jugadore);
             }
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool JugadoreExists(int id)
-        {
-          return (_context.Jugadores?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

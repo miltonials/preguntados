@@ -18,9 +18,8 @@ namespace preguntados.Models
 
         public virtual DbSet<Jugadore> Jugadores { get; set; } = null!;
         public virtual DbSet<Pregunta> Preguntas { get; set; } = null!;
-        public virtual DbSet<Resultado> Resultados { get; set; } = null!;
-        public virtual DbSet<Vhistorialresultado> Vhistorialresultados { get; set; } = null!;
-        public virtual DbSet<Vpreguntasaleatoria> Vpreguntasaleatorias { get; set; } = null!;
+        public virtual DbSet<Historial> Historial { get; set; } = null!;
+        public virtual DbSet<Vpreguntasaleatorias> Vpreguntasaleatorias { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -62,52 +61,26 @@ namespace preguntados.Models
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<Resultado>(entity =>
+            modelBuilder.Entity<Historial>(entity =>
             {
-                entity.ToTable("resultados");
+                entity.ToTable("historial");
 
-                entity.HasIndex(e => e.JugadorId, "JugadorID");
+                entity.HasIndex(e => e.Id, "ID");
 
-                entity.HasIndex(e => e.PreguntaId, "PreguntaID");
+                entity.Property(e => e.Id).HasMaxLength(200);
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.JugadorId).HasColumnName("jugadorID");
 
-                entity.Property(e => e.FechaHoraRespuesta).HasColumnType("datetime");
-
-                entity.Property(e => e.JugadorId).HasColumnName("JugadorID");
-
-                entity.Property(e => e.PreguntaId).HasColumnName("PreguntaID");
-
-                entity.Property(e => e.RespuestaElegida)
-                    .HasMaxLength(1)
-                    .IsFixedLength();
+                entity.Property(e => e.FechaHora).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Jugador)
                     .WithMany(p => p.Resultados)
                     .HasForeignKey(d => d.JugadorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("resultados_ibfk_1");
-
-                entity.HasOne(d => d.Pregunta)
-                    .WithMany(p => p.Resultados)
-                    .HasForeignKey(d => d.PreguntaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("resultados_ibfk_2");
+                    .HasConstraintName("historial_ibfk_1");
             });
 
-            modelBuilder.Entity<Vhistorialresultado>(entity =>
-            {
-                entity.HasNoKey();
-                //entity.Property(e => e.Jugador).HasColumnName("Jugador");
-
-                entity.ToView("vhistorialresultados");
-
-                entity.Property(e => e.Aciertos).HasPrecision(23);
-
-                entity.Property(e => e.Jugador).HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Vpreguntasaleatoria>(entity =>
+            modelBuilder.Entity<Vpreguntasaleatorias>(entity =>
             {
                 entity.HasNoKey();
                 //entity.Property(e => e.Pregunta).HasColumnName("Pregunta");

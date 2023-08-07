@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 
 namespace preguntados.Models
 {
     [Keyless]
-    public partial class Vpreguntasaleatoria
+    public partial class Vpreguntasaleatorias
     {
         public int? Id { get; set; }
         public string? Pregunta { get; set; }
