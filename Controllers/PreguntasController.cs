@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MessagePack.Formatters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using preguntados.Models;
+using System.ComponentModel;
 
 namespace preguntados.Controllers
 {
-    public class JugadoresController : Controller
+    public class PreguntasController : Controller
     {
         private readonly preguntadosContext _context;
 
-        public JugadoresController(preguntadosContext context)
+        public PreguntasController(preguntadosContext context)
         {
             _context = context;
         }
@@ -20,13 +22,8 @@ namespace preguntados.Controllers
             ViewBag.player = jugador.Nombre;
 
             ViewBag.preguntas = _context.Vpreguntasaleatorias.ToList();
-            var historial = _context.Historial;
-            int totalSesiones = _context.Historial.Where(h => h.JugadorId == jugador.Id).Count();
-            string idSesion = jugador.Nombre.ToUpper() + (totalSesiones).ToString();
-
-            ViewBag.idSesion = idSesion;
-            
-            return View(await historial.ToListAsync());
+            var preguntadosContext = _context.Historial;
+            return View(await preguntadosContext.ToListAsync());
         }
 
         // POST: Jugadores/Create
@@ -39,12 +36,20 @@ namespace preguntados.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugadore.Nombre})");
-                jugadore.Id = _context.Jugadores.Where(j => j.Nombre == jugadore.Nombre).FirstOrDefault().Id;
+
                 ViewBag.player = jugadore.Nombre.ToUpper();
 
                 return RedirectToAction(nameof(Index),"Jugadores", jugadore);
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        public int ValidarRespuesta(int pregunta, Historial sesion)
+        {
+            int respuesta = 1;
+            //Task<int> respuesta = _context.Database.ExecuteSqlInterpolatedAsync($"CALL fValidarRespuesta({pregunta.Id}, {sesion.Id})");
+
+            return respuesta == 1 ? 1 : 0;
         }
     }
 }

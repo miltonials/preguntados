@@ -56,9 +56,9 @@ namespace preguntados.Models
                     .HasMaxLength(500)
                     .HasColumnName("Pregunta");
 
-                entity.Property(e => e.RespuestaCorrecta)
-                    .HasMaxLength(1)
-                    .IsFixedLength();
+                //entity.Property(e => e.RespuestaCorrecta)
+                //    .HasMaxLength(1)
+                //    .IsFixedLength();
             });
 
             modelBuilder.Entity<Historial>(entity =>

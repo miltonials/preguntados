@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="row">
-        <h1>Bienvenido @ViewBag.player</h1>
+        <h1>Bienvenido @ViewBag.player | sesion: @ViewBag.idSesion</h1>
         <div class="col-md-6">
             <div class="align-content-center">
 
@@ -45,13 +45,15 @@
                                                                 <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
                                                                 <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
                                                                 <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
-                                                                <input type="submit" value="Responder" class="btn btn-primary" />
+                                                                <input type="submit" value="Responder" class="btn btn-primary" asp-controller="Preguntas" asp-action="Create" asp-route-id="${question.id}"/>
+                                                                <p>Respuestas correctas: ${question.RespuestaCorrecta}</p>
                                                             </form>
                                                         `;
 
                             document.getElementById("answerForm").addEventListener("submit", function (event) {
                                 event.preventDefault();
                                 let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+                                
 
                                 if (correctAnswer === selectedAnswer) {
                                     correctAnswersCount++;
@@ -84,7 +86,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Jugador.Nombre)
+                                @Html.DisplayFor(modelItem => item.Id)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Aciertos)
