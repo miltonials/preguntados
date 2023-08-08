@@ -1,8 +1,9 @@
-DigiCertGlobalRootCA.crt.pem
-appsettings.json
-bin/*
-wwwroot/*
-obj/*
+vs_project/DigiCertGlobalRootCA.crt.pem
+vs_project/appsettings.json
+vs_project/bin/*
+vs_project/wwwroot/*
+vs_project/obj/*
+vs_project/.vs/*
 .vs/*
 *.map
 *.log
