@@ -20,10 +20,17 @@
                 <script>
                     let correctAnswersCount = 0;
                     let correctAnswer = "";
+                    let sesion = @Html.Raw(Json.Serialize(ViewBag.idSesion));
 
-                    document.getElementById("startButton").addEventListener("click", function () {
+                    document.getElementById("startButton").addEventListener("click", async function () {
                         document.getElementById("startButton").style.display = "none";
                         showQuestion(0);
+                        await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${0}&respuesta=Z&sesion=${sesion}`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                     });
 
                     function showQuestion(index) {
@@ -31,33 +38,42 @@
                         let question = questions[index];
 
                         if (!question) {
+                            //let response = await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                            //        method: 'POST',
+                            //        headers: {
+                            //            'Accept': 'application/json'
+                            //        }
+                            //    });
 
                             document.getElementById("questionContainer").innerHTML = `
-                                                            <h3>Fin del juego</h3>
-                                                            <p>Respuestas correctas: ${correctAnswersCount}</p>
-                                                        `;
+                                <h3>Fin del juego</h3>
+                                <p>Respuestas correctas: ${correctAnswersCount}</p>
+                            `;
                         } else {
                             correctAnswer = question.respuestaCorrecta;
                             document.getElementById("questionContainer").innerHTML = `
-                                                            <h3>Pregunta:</h3>
-                                                            <p>${question.pregunta}</p>
-                                                            <form id="answerForm">
-                                                                <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
-                                                                <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
-                                                                <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
-                                                                <input type="submit" value="Responder" class="btn btn-primary" asp-controller="Preguntas" asp-action="Create" asp-route-id="${question.id}"/>
-                                                                <p>Respuestas correctas: ${question.RespuestaCorrecta}</p>
-                                                            </form>
-                                                        `;
+                                <h3>Pregunta:</h3>
+                                <p>${question.pregunta}</p>
+                                <form id="answerForm">
+                                    <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
+                                    <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
+                                    <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
+                                    <input type="submit" value="Responder" class="btn btn-primary" />
+                                </form>
+                            `;
 
-                            document.getElementById("answerForm").addEventListener("submit", function (event) {
+                            document.getElementById("answerForm").addEventListener("submit", async function (event) {
                                 event.preventDefault();
-                                let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
-                                
 
-                                if (correctAnswer === selectedAnswer) {
-                                    correctAnswersCount++;
-                                }
+                                let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+
+                                // Llamada a la API para validar la respuesta en el servidor
+                                await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json'
+                                    }
+                                });
 
                                 showQuestion(index + 1);
                             });
@@ -65,7 +81,8 @@
                     }
                 </script>
             }
-                </div>
+            
+        </div>
         </div>
         <div class="col-md-6 border">
             <h3>Historial de partidas</h3>

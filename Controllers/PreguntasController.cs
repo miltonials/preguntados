@@ -44,12 +44,11 @@ namespace preguntados.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public int ValidarRespuesta(int pregunta, Historial sesion)
+        [HttpPost]
+        public Task ValidarRespuesta(int idPregunta, char respuesta, string sesion)
         {
-            int respuesta = 1;
-            //Task<int> respuesta = _context.Database.ExecuteSqlInterpolatedAsync($"CALL fValidarRespuesta({pregunta.Id}, {sesion.Id})");
-
-            return respuesta == 1 ? 1 : 0;
+            Task serverResponse = _context.Database.ExecuteSqlInterpolatedAsync($"SELECT fValidarRespuesta({idPregunta}, {respuesta}, {sesion})");
+            return serverResponse;
         }
     }
 }

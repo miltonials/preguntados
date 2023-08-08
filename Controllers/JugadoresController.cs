@@ -16,6 +16,11 @@ namespace preguntados.Controllers
         // GET: Jugadores
         public async Task<IActionResult> Index(Jugadore jugador)
         {
+            var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugador.Nombre})");
+            jugador.Id = _context.Jugadores.Where(j => j.Nombre == jugador.Nombre).FirstOrDefault().Id;
+            ViewBag.player = jugador.Nombre.ToUpper();
+
+
             ViewData["player"] = jugador.Nombre;
             ViewBag.player = jugador.Nombre;
 
@@ -38,9 +43,9 @@ namespace preguntados.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugadore.Nombre})");
-                jugadore.Id = _context.Jugadores.Where(j => j.Nombre == jugadore.Nombre).FirstOrDefault().Id;
-                ViewBag.player = jugadore.Nombre.ToUpper();
+                //var result = await _context.Database.ExecuteSqlInterpolatedAsync($"CALL RegistrarJugador({jugadore.Nombre})");
+                //jugadore.Id = _context.Jugadores.Where(j => j.Nombre == jugadore.Nombre).FirstOrDefault().Id;
+                //ViewBag.player = jugadore.Nombre.ToUpper();
 
                 return RedirectToAction(nameof(Index),"Jugadores", jugadore);
             }
