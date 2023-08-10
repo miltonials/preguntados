@@ -19,16 +19,10 @@
                         let correctAnswer = "";
                         let sesion = `@Html.Raw(ViewBag.Sesion.registro.id)`;
 
-                        function decodeHtmlEntities(text) {
-                            var tempElement = document.createElement("div");
-                            tempElement.innerHTML = text;
-                            return tempElement.textContent || tempElement.innerText || "";
-                        }
-
                         document.getElementById("startButton").addEventListener("click", async function () {
                             document.getElementById("startButton").style.display = "none";
                             await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${-1}&respuesta=Z&sesion=${sesion}`, {
-                                method: 'POST',
+                                method: 'GET',
                                 headers: {
                                     'Accept': 'application/json'
                                 }
@@ -36,8 +30,11 @@
                             showQuestion(0);
                         });
 
-                        function showQuestion(index) {
-                            let questions = JSON.parse((decodeHtmlEntities(`@ViewBag.Sesion.preguntas`)));
+                        async function showQuestion(index) {
+                            let questions = await JSON.parse(
+                                    document.getElementById("preguntas").innerText
+                            );
+                            //document.getElementById("preguntas").remove();
                             let question = questions[index];
 
                             if (!question) {
@@ -52,6 +49,11 @@
                                                         <h3>Fin del juego</h3>
                                                         <p>Respuestas correctas: ${correctAnswersCount}</p>
                                                     `;
+
+                                //boton para recargar la pagina
+                                document.getElementById("questionContainer").innerHTML += `
+                                    <a href="/Preguntados/CrearSesion?nombreJugador=${@Html.Raw(ViewBag.Sesion.jugador.nombre)}" class="btn btn-primary">Volver a jugar</a>
+                                    `;
                             } else {
                                 correctAnswer = question.respuestaCorrecta;
                                 document.getElementById("questionContainer").innerHTML = `
@@ -61,7 +63,7 @@
                                                             <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
                                                             <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
                                                             <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
-                                                            <input type="submit" value="Responder" class="btn btn-primary" />
+                                                            <input id="btnResponder" type="submit" value="Responder" class="btn btn-primary" enabled />
                                                         </form>
                                                     `;
 
@@ -69,10 +71,13 @@
                                     event.preventDefault();
 
                                     let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+                                    
+                                    document.getElementById("questionContainer").innerHTML = `<h3>Validando respuesta...</h3>`;
+
 
                                     // Llamada a la API para validar la respuesta en el servidor
-                                    await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
-                                        method: 'POST',
+                                    await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                                        method: 'GET',
                                         headers: {
                                             'Accept': 'application/json'
                                         }
@@ -87,10 +92,12 @@
 
             </div>
         </div>
-        <div class="col-md-6 border" data-bs-spy="scroll">
+        <div class="col-md-6 border">
             <h3>Historial de partidas</h3>
             @*<iframe src="~/../historial" width="100%" height="500px"></iframe>*@
-            @ViewBag.Sesion.preguntas
+            <p id="preguntas" class="d-none d-print-block">
+                @ViewBag.Sesion.preguntas
+            </p>
             <table class="table">
                 <thead>
                     <tr>

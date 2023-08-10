@@ -36,19 +36,12 @@ namespace preguntados.Controllers
         }
 
 
-        [HttpPost("ValidarRespuesta")]
+        [HttpGet("ValidarRespuesta")]
         public async Task<int> ValidarRespuesta(int idPregunta, char respuesta, string sesion)
         {
             var serverResponse = await _context.Database.ExecuteSqlInterpolatedAsync($"SELECT fValidarRespuesta({idPregunta}, {respuesta}, {sesion})");
             return serverResponse;
         }
-
-        //[HttpGet("ValidarRespuesta")]
-        //public async Task<ActionResult> ValidarRespuesta(int idPregunta, char respuesta, string sesion)
-        //{
-        //    await _context.Database.ExecuteSqlInterpolatedAsync($"SELECT fValidarRespuesta({idPregunta}, {respuesta}, {sesion})");
-        //    return NoContent();
-        //}
 
         [HttpGet("historial")]
         public ActionResult<Historial> historial()
