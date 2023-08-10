@@ -1,15 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using preguntados.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<preguntadosContext>(options =>
-{
-    options.UseMySql(builder.Configuration.GetConnectionString("conexion"), ServerVersion.Parse("8.0.32-mysql"));
-});
 
 var app = builder.Build();
 
@@ -30,6 +22,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 app.Run();

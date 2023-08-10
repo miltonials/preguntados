@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <h1>Bienvenido @ViewBag.Sesion.jugador.nombre | sesion: @ViewBag.Sesion.registro.id</h1>
+        <div class="col-md-6">
+            <div class="align-content-center">
+
+
+                <button id="startButton" class="btn btn-primary">Iniciar partida</button>
+                <div id="questionContainer">
+                </div>
+
+                @section Scripts {
+                    <script>
+                        let correctAnswersCount = 0;
+                        let correctAnswer = "";
+                        let sesion = `@Html.Raw(ViewBag.Sesion.registro.id)`;
+
+                        function decodeHtmlEntities(text) {
+                            var tempElement = document.createElement("div");
+                            tempElement.innerHTML = text;
+                            return tempElement.textContent || tempElement.innerText || "";
+                        }
+
+                        document.getElementById("startButton").addEventListener("click", async function () {
+                            document.getElementById("startButton").style.display = "none";
+                            await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${-1}&respuesta=Z&sesion=${sesion}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            showQuestion(0);
+                        });
+
+                        function showQuestion(index) {
+                            let questions = JSON.parse((decodeHtmlEntities(`@ViewBag.Sesion.preguntas`)));
+                            let question = questions[index];
+
+                            if (!question) {
+                                //let response = await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                                //        method: 'POST',
+                                //        headers: {
+                                //            'Accept': 'application/json'
+                                //        }
+                                //    });
+
+                                document.getElementById("questionContainer").innerHTML = `
+                                                        <h3>Fin del juego</h3>
+                                                        <p>Respuestas correctas: ${correctAnswersCount}</p>
+                                                    `;
+                            } else {
+                                correctAnswer = question.respuestaCorrecta;
+                                document.getElementById("questionContainer").innerHTML = `
+                                                        <h3>Pregunta:</h3>
+                                                        <p>${question.enunciado}</p>
+                                                        <form id="answerForm">
+                                                            <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
+                                                            <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
+                                                            <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
+                                                            <input type="submit" value="Responder" class="btn btn-primary" />
+                                                        </form>
+                                                    `;
+
+                                document.getElementById("answerForm").addEventListener("submit", async function (event) {
+                                    event.preventDefault();
+
+                                    let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+
+                                    // Llamada a la API para validar la respuesta en el servidor
+                                    await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+
+                                    showQuestion(index + 1);
+                                });
+                            }
+                        }
+                    </script>
+                }
+
+            </div>
+        </div>
+        <div class="col-md-6 border" data-bs-spy="scroll">
+            <h3>Historial de partidas</h3>
+            @*<iframe src="~/../historial" width="100%" height="500px"></iframe>*@
+            @ViewBag.Sesion.preguntas
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Judador
+                        </th>
+                        <th>
+                            Aciertos
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < ViewBag.Historial.resultados.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @ViewBag.Historial.resultados[i].id
+                            </td>
+                            <td>
+                                @ViewBag.Historial.resultados[i].aciertos
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

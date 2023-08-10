@@ -1,4 +1,4 @@
-namespace preguntados.Models
+namespace preguntados_frontend.Models
 {
     public class ErrorViewModel
     {
