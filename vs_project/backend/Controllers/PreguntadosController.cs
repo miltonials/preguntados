@@ -50,5 +50,20 @@ namespace preguntados.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpGet("ObtenerPuntaje")]
+        public async Task<int> ObtenerPuntaje(string idSesion)
+        {
+            //var serverResponse = await _context.Database.ExecuteSqlInterpolatedAsync($"SELECT fObtenerPuntaje({idSesion})");
+            try
+            {
+                int aciertos = (int)_context.Historial.FirstOrDefault(h => h.Id == idSesion).Aciertos;
+                return await Task.FromResult(aciertos);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(-1);
+            }
+        }
     }
 }

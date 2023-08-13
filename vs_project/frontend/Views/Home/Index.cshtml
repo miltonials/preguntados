@@ -4,7 +4,6 @@
 
 <div class="container">
     <div class="row">
-        <h1>Bienvenido @ViewBag.Sesion.jugador.nombre | sesion: @ViewBag.Sesion.registro.id</h1>
         <div class="col-md-6">
             <div class="align-content-center">
 
@@ -12,93 +11,14 @@
                 <button id="startButton" class="btn btn-primary">Iniciar partida</button>
                 <div id="questionContainer">
                 </div>
-
-                @section Scripts {
-                    <script>
-                        let correctAnswersCount = 0;
-                        let correctAnswer = "";
-                        let sesion = `@Html.Raw(ViewBag.Sesion.registro.id)`;
-
-                        document.getElementById("startButton").addEventListener("click", async function () {
-                            document.getElementById("startButton").style.display = "none";
-                            await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${-1}&respuesta=Z&sesion=${sesion}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Accept': 'application/json'
-                                }
-                            });
-                            showQuestion(0);
-                        });
-
-                        async function showQuestion(index) {
-                            let questions = await JSON.parse(
-                                    document.getElementById("preguntas").innerText
-                            );
-                            //document.getElementById("preguntas").remove();
-                            let question = questions[index];
-
-                            if (!question) {
-                                //let response = await fetch(`/Preguntas/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
-                                //        method: 'POST',
-                                //        headers: {
-                                //            'Accept': 'application/json'
-                                //        }
-                                //    });
-
-                                document.getElementById("questionContainer").innerHTML = `
-                                                        <h3>Fin del juego</h3>
-                                                        <p>Respuestas correctas: ${correctAnswersCount}</p>
-                                                    `;
-
-                                //boton para recargar la pagina
-                                document.getElementById("questionContainer").innerHTML += `
-                                    <a href="/Preguntados/CrearSesion?nombreJugador=${@Html.Raw(ViewBag.Sesion.jugador.nombre)}" class="btn btn-primary">Volver a jugar</a>
-                                    `;
-                            } else {
-                                correctAnswer = question.respuestaCorrecta;
-                                document.getElementById("questionContainer").innerHTML = `
-                                                        <h3>Pregunta:</h3>
-                                                        <p>${question.enunciado}</p>
-                                                        <form id="answerForm">
-                                                            <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
-                                                            <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
-                                                            <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
-                                                            <input id="btnResponder" type="submit" value="Responder" class="btn btn-primary" enabled />
-                                                        </form>
-                                                    `;
-
-                                document.getElementById("answerForm").addEventListener("submit", async function (event) {
-                                    event.preventDefault();
-
-                                    let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
-                                    
-                                    document.getElementById("questionContainer").innerHTML = `<h3>Validando respuesta...</h3>`;
-
-
-                                    // Llamada a la API para validar la respuesta en el servidor
-                                    await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
-                                        method: 'GET',
-                                        headers: {
-                                            'Accept': 'application/json'
-                                        }
-                                    });
-
-                                    showQuestion(index + 1);
-                                });
-                            }
-                        }
-                    </script>
-                }
-
             </div>
         </div>
-        <div class="col-md-6 border">
+        <div class="col-md-6 border" style=" max-height: 85vh; overflow: scroll;">
             <h3>Historial de partidas</h3>
-            @*<iframe src="~/../historial" width="100%" height="500px"></iframe>*@
             <p id="preguntas" class="d-none d-print-block">
                 @ViewBag.Sesion.preguntas
             </p>
-            <table class="table">
+            <table class="table table-striped table-dark table-responsive table-hover table-bordered">
                 <thead>
                     <tr>
                         <th>
@@ -126,3 +46,76 @@
         </div>
     </div>
 </div>
+
+
+
+
+@section Scripts {
+<script>
+    let totalScore = 0;
+    let sesion = `@Html.Raw(ViewBag.Sesion.registro.id)`;
+
+    document.getElementById("startButton").addEventListener("click", async function () {
+        document.getElementById("startButton").style.display = "none";
+        await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${-1}&respuesta=Z&sesion=${sesion}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        showQuestion(0);
+    });
+
+    async function showQuestion(index) {
+        let questions = await JSON.parse(
+                document.getElementById("preguntas").innerText
+        );
+        let question = questions[index];
+
+        if (!question) {
+            let x = new XMLHttpRequest();
+            x.open("GET", "https://localhost:7081/Preguntados/ObtenerPuntaje?idSesion=" + sesion, true);
+            x.onreadystatechange = function () {
+                if (x.readyState == 4 && x.status == 200) {
+                    totalScore = x.responseText;
+                    document.getElementById("questionContainer").innerHTML = `
+                                    <h3>Fin del juego</h3>
+                                    <p>Respuestas correctas: ${totalScore}</p>
+                                    <button onclick="location.reload()" class="btn btn-secondary">Recargar</button>
+                                `;
+                }
+            }
+            x.send(null);
+        } else {
+            correctAnswer = question.respuestaCorrecta;
+            document.getElementById("questionContainer").innerHTML = `
+                                    <h3>Pregunta:</h3>
+                                    <p>${question.enunciado}</p>
+                                    <form id="answerForm">
+                                        <input type="radio" name="answer" value="A" /> ${question.opcionA} <br />
+                                        <input type="radio" name="answer" value="B" /> ${question.opcionB} <br />
+                                        <input type="radio" name="answer" value="C" /> ${question.opcionC} <br />
+                                        <input id="btnResponder" type="submit" value="Responder" class="btn btn-primary" enabled />
+                                    </form>
+                                `;
+
+            document.getElementById("answerForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                let selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+                                    
+                document.getElementById("questionContainer").innerHTML = `<h3>Validando respuesta...</h3>`;
+
+                await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${question.id}&respuesta=${selectedAnswer}&sesion=${sesion}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                showQuestion(index + 1);
+            });
+        }
+    }
+</script>
+}

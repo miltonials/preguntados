@@ -15,7 +15,7 @@ CREATE TABLE Jugadores (
 -- Creación de la tabla Preguntas para almacenar las preguntas del juego
 CREATE TABLE Preguntas (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    Pregunta VARCHAR(500) NOT NULL,
+    Enunciado VARCHAR(500) NOT NULL,
     OpcionA VARCHAR(200) NOT NULL,
     OpcionB VARCHAR(200) NOT NULL,
     OpcionC VARCHAR(200) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE Historial (
 -- Crear la función que retorna una tabla con 10 preguntas aleatorias
 DROP VIEW IF EXISTS vPreguntasAleatorias;
 CREATE VIEW vPreguntasAleatorias AS
-SELECT Id, Pregunta, OpcionA, OpcionB, OpcionC, RespuestaCorrecta
+SELECT Id, Enunciado, OpcionA, OpcionB, OpcionC, RespuestaCorrecta
 FROM Preguntas
 ORDER BY RAND()
 LIMIT 10;
@@ -63,7 +63,26 @@ VALUES ('¿Cuál es la capital de Francia?', 'Berlín', 'Londres', 'París', 'C'
 	('¿Cuál es el desierto más grande del mundo?', 'Sahara', 'Atacama', 'Gobi', 'A'),
 	('¿En qué país se encuentra el Coliseo Romano?', 'Italia', 'Grecia', 'Egipto', 'A');
 
-
+DELIMITER $$
+DROP FUNCTION IF EXISTS fObtenerPuntaje;
+CREATE FUNCTION fObtenerPuntaje(
+    p_idSesion VARCHAR(30)
+)
+RETURNS INT
+BEGIN
+    DECLARE puntaje INT;
+    DECLARE existeSesion int;
+    
+    SELECT COUNT(*) INTO existeSesion FROM Historial WHERE ID = p_idSesion;
+    
+    IF existeSesion > 0 THEN
+        SELECT Aciertos INTO puntaje FROM Historial WHERE ID = p_idSesion;
+        RETURN puntaje;
+    ELSE
+        RETURN -1;
+    END IF;
+END$$
+DELIMITER;
 
 DELIMITER $$
 DROP FUNCTION IF EXISTS fValidarRespuesta;
