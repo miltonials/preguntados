@@ -78,8 +78,15 @@
             x.onreadystatechange = function () {
                 if (x.readyState == 4 && x.status == 200) {
                     totalScore = x.responseText;
+                    let mensaje = ``;
+                    if (totalScore > 5) {
+                        mensaje = `¡Felicitaciones, ganaste! 🥳`;
+                    } else {
+                        mensaje = `¡Perdiste! 😢`;
+                    }
+
                     document.getElementById("questionContainer").innerHTML = `
-                                    <h3>Fin del juego</h3>
+                                    <h3>Fin del juego ${mensaje}</h3>
                                     <p>Respuestas correctas: ${totalScore}</p>
                                     <button onclick="location.reload()" class="btn btn-secondary">Recargar</button>
                                 `;

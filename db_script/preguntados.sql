@@ -41,7 +41,7 @@ LIMIT 10;
 
 
 -- Inserts de preguntas
-INSERT INTO Preguntas (Pregunta, OpcionA, OpcionB, OpcionC, RespuestaCorrecta)
+INSERT INTO Preguntas (Enunciado, OpcionA, OpcionB, OpcionC, RespuestaCorrecta)
 VALUES ('¿Cuál es la capital de Francia?', 'Berlín', 'Londres', 'París', 'C'),
 	('¿En qué país se encuentra el Taj Mahal?', 'India', 'China', 'Egipto', 'A'),
 	('¿Cuál es el río más largo del mundo?', 'Nilo', 'Amazonas', 'Mississippi', 'B'),
