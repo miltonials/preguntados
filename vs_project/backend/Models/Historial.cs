@@ -2,6 +2,9 @@
 
 namespace preguntados.Models
 {
+    /// <summary>
+    /// Esta clase modela la tabla historial de la base de datos
+    /// </summary>
     public partial class Historial
     {
         public string? Id { get; set; }

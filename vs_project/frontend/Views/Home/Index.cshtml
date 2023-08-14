@@ -57,6 +57,7 @@
 
     document.getElementById("startButton").addEventListener("click", async function () {
         document.getElementById("startButton").style.display = "none";
+        //esta llamada se hace para pasar los aciertos de null a 0 en el servidor
         await fetch(`https://localhost:7081/Preguntados/ValidarRespuesta?idPregunta=${-1}&respuesta=Z&sesion=${sesion}`, {
             method: 'GET',
             headers: {
@@ -66,6 +67,10 @@
         showQuestion(0);
     });
 
+    /**
+     * Función asincrona que permite mostrar las preguntas 1 por 1
+     * param {number} index: índice de la pregunta a mostrar
+     */
     async function showQuestion(index) {
         let questions = await JSON.parse(
                 document.getElementById("preguntas").innerText

@@ -5,6 +5,9 @@ using preguntados_backend.Models;
 
 namespace preguntados.Controllers
 {
+    /// <summary>
+    /// Esta clase es el controlador de la aplicación
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class PreguntadosController : Controller
@@ -17,6 +20,11 @@ namespace preguntados.Controllers
         }
 
         // GET: Jugadores
+        // <summary>
+        // Método que permite crear sesiones de juego
+        // </summary>
+        // <param name="nombreJugador">Nombre del jugador</param>
+        // <returns>Objeto Sesion</returns>
         [HttpGet("CrearSesion")]
         public async Task<ActionResult<Sesion>> CrearSesion(string nombreJugador)
         {
@@ -36,6 +44,15 @@ namespace preguntados.Controllers
         }
 
 
+        /// <summary>
+        /// Método que permite validar la respuesta de una pregunta
+        /// </summary>
+        /// <param name="idPregunta"></param>
+        /// <param name="respuesta"></param>
+        /// <param name="sesion"></param>
+        /// <returns>
+        /// Este método retorna un entero(-1) que únicamente indica si se ejecutó correctamente la función
+        /// </returns>
         [HttpGet("ValidarRespuesta")]
         public async Task<int> ValidarRespuesta(int idPregunta, char respuesta, string sesion)
         {
@@ -43,6 +60,12 @@ namespace preguntados.Controllers
             return serverResponse;
         }
 
+        /// <summary>
+        /// Método que permite obtener el historial de los jugadores
+        /// </summary>
+        /// <returns>
+        /// Este método retorna una lista de objetos Historial ordenados descendentemente por el número de aciertos
+        /// </returns>
         [HttpGet("historial")]
         public ActionResult<Historial> historial()
         {
@@ -51,10 +74,16 @@ namespace preguntados.Controllers
             return Ok(resultado);
         }
 
+        /// <summary>
+        /// Método que permite obtener el puntaje de una sesión
+        /// </summary>
+        /// <param name="idSesion"></param>
+        /// <returns>
+        /// Retorna un entero que representa el número de aciertos de la sesión
+        /// </returns>
         [HttpGet("ObtenerPuntaje")]
         public async Task<int> ObtenerPuntaje(string idSesion)
         {
-            //var serverResponse = await _context.Database.ExecuteSqlInterpolatedAsync($"SELECT fObtenerPuntaje({idSesion})");
             try
             {
                 int aciertos = (int)_context.Historial.FirstOrDefault(h => h.Id == idSesion).Aciertos;

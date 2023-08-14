@@ -5,6 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace preguntados_frontend.Controllers
 {
+    /// <summary>
+    /// Clase que modela el controlador del home.
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -14,6 +17,11 @@ namespace preguntados_frontend.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Clase que se encarga de comunicarse con el backend.
+        /// </summary>
+        /// <param name="nombreJugador"></param>
+        /// <returns>IActionResult: vista index del home</returns>
         [HttpPost]
         public IActionResult Index(string nombreJugador)
         {
@@ -38,6 +46,10 @@ namespace preguntados_frontend.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Método error que se encarga de mostrar la vista de error.
+        /// </summary>
+        /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
