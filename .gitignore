@@ -1,6 +1,5 @@
 vs_project/frontend/appsettings.json
 vs_project/frontend/bin/*
-vs_project/frontend/wwwroot/*
 vs_project/frontend/obj/*
 vs_project/frontend/.vs/*
 
